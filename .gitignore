@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.decrypted.json
+.env
+.env.local
+.env.*.local
+
+# Copied from lab.cerakey.com (Cerakey code); local test oracle only, never published
+tests/official-reference.ts

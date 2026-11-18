@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peak60 Config Editor</title>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Peak60 <span>Config Editor</span></div>
+  <div class="file-actions">
+    <button class="btn primary" id="readBtn" title="Load the configuration that's on the keyboard right now">Read from keyboard</button>
+    <label class="btn">Open file…<input id="fileInput" type="file" accept=".json,application/json" hidden></label>
+    <button class="btn" id="exportBtn" disabled>Export (encrypted)</button>
+    <button class="btn ghost" id="exportPlainBtn" disabled title="Decrypted JSON for inspection / diffing. The official editor will not import this.">Export decrypted</button>
+    <button class="btn ghost" id="undoBtn" disabled title="Ctrl+Z">Undo</button>
+  </div>
+  <div class="device-actions">
+    <span id="devStatus" class="dev-status">No keyboard</span>
+    <button class="btn" id="connectBtn">Connect keyboard</button>
+    <button class="btn primary" id="writeBtn" disabled>Write to keyboard…</button>
+    <label class="auto-toggle" title="Write each change to the keyboard as soon as you make it"><input type="checkbox" id="autoWrite"> Auto-write</label>
+    <button type="button" class="auto-status" id="autoStatus" hidden></button>
+  </div>
+</header>
+
+<main id="app">
+  <section id="dropZone" class="drop">
+    <h1>Plug in your Peak60</h1>
+    <p>Read the settings straight off the keyboard, edit them, and write them back. No export needed.</p>
+    <div class="row center"><button class="btn primary big" id="readBtn2">Read from keyboard</button></div>
+    <p class="muted">Or drop a <code>keyboard_config.json</code> from lab.cerakey.com here to edit a saved file.<br>
+      Everything runs locally in this page. Nothing is uploaded.</p>
+    <p class="muted" id="passNote" hidden>Encrypted files need the Cerakey file passphrase, which isn't included (see the README).
+      You'll be asked for it when you open one.</p>
+  </section>
+
+  <section id="editor" hidden>
+    <div class="info" id="info"></div>
+
+    <div class="toolbar">
+      <div class="seg" id="osSeg">
+        <button data-os="win" class="on">Windows</button><button data-os="mac">macOS</button>
+      </div>
+      <div class="seg" id="layerSeg">
+        <button data-layer="0" class="on">Base</button><button data-layer="1">Fn1</button><button data-layer="2">Fn2</button><button data-layer="3">Fn3</button>
+      </div>
+      <div class="sel-tools">
+        <button class="btn small" id="selAll">Select all</button>
+        <button class="btn small" id="selNone">Clear selection</button>
+        <span class="muted" id="selCount"></span>
+      </div>
+    </div>
+
+    <div id="keyboard" class="keyboard"></div>
+    <p class="hint">Click a key to select it. Shift/Ctrl+click or drag to select several.</p>
+
+    <nav class="tabs" id="tabs">
+      <button data-tab="presets">✨ Presets</button>
+      <button data-tab="keymap" class="on">Keymap</button>
+      <button data-tab="performance">Actuation / RT</button>
+      <button data-tab="lighting">Lighting</button>
+      <button data-tab="advanced">Advanced keys</button>
+      <button data-tab="macros">Macros</button>
+      <button data-tab="raw">Raw JSON</button>
+    </nav>
+    <div id="panel" class="panel"></div>
+  </section>
+</main>
+
+<dialog id="writeDlg" class="dlg">
+  <form method="dialog" id="writeForm">
+    <h2>Write to keyboard</h2>
+    <div id="writeBody"></div>
+    <div class="progress" id="writeProgress" hidden><div class="bar"></div><span class="ptext"></span></div>
+    <div id="writeResult"></div>
+    <div class="row dlg-actions">
+      <button type="button" class="btn ghost" id="logBtn" hidden>Download packet log</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="writeCancel">Close</button>
+      <button type="button" class="btn primary" id="writeStart">Start writing</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="readDlg" class="dlg">
+  <h2>Reading from keyboard</h2>
+  <p class="muted">Keymaps (Windows and Mac), actuation, advanced keys, lighting and macros. Keep the keyboard plugged in.</p>
+  <div class="progress" id="readProgress"><div class="bar"></div><span class="ptext"></span></div>
+  <div id="readResult"></div>
+  <div class="row dlg-actions"><span class="spacer"></span><button type="button" class="btn" id="readClose" hidden>Close</button></div>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

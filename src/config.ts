@@ -120,3 +120,27 @@ export function macroFix(m: { data: unknown[]; actNum: number; valid: boolean; r
   m.valid = m.data.length > 0;
   if (!m.repNum) m.repNum = 1;
 }
+
+/**
+ * Empty matrix slots on either side of the spacebar (row 5, col 6). A 6.25u spacebar's LEDs
+ * sit under the bar, and on the Peak60 they appear to use these switch-less slots in the colour
+ * grid. Left unpainted, they keep running the lighting effect (e.g. cycling colours) whatever
+ * colour the spacebar itself is given. Mirroring the spacebar's colour into them fixes that.
+ */
+export const SPACE_KEY = { row: 5, col: 6 } as const;
+export const SPACE_LED_SLOTS: readonly (readonly [number, number])[] = [[5, 3], [5, 4], [5, 5], [5, 7], [5, 8], [5, 9]];
+
+/** Copies the spacebar's per-key colour (or its absence) into the slots under the bar. */
+export function mirrorSpaceLeds(cfg: KeyboardConfig): void {
+  const area = lightArea(cfg);
+  const grid = area ? cfg.v2light[area]?.customLight : undefined;
+  const src = grid?.[SPACE_KEY.row]?.[SPACE_KEY.col];
+  if (!grid || !src) return;
+  const idx = new Map(cfg.keyboards.flat().map(k => [`${k.row}-${k.col}`, k]));
+  for (const [r, c] of SPACE_LED_SLOTS) {
+    if (!grid[r]) continue;
+    grid[r][c] = { ...src };
+    const k = idx.get(`${r}-${c}`);
+    if (k) k.customLight = { ...src };
+  }
+}

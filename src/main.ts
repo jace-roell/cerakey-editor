@@ -2,7 +2,7 @@
 import "./style.css";
 import {
   ADV_TYPES, EMPTY_ADV, FN1, LAYOUT, LIGHT_MODES, MACRO_BASE, MACRO_MODES, MOD_BITS,
-  activeOs, advType, bindOf, defaultOf, describe, id, isRT, keyColor, label, lightArea, macroFix, slot,
+  activeOs, advType, bindOf, defaultOf, describe, id, isRT, keyColor, label, lightArea, macroFix, mirrorSpaceLeds, slot,
 } from "./config";
 import { ENV_PASSPHRASE, MissingPassphraseError, decryptText, encryptConfig, isEncryptedFile } from "./crypto";
 import { KeyboardDevice, hex, hidSupported } from "./hid/device";
@@ -403,6 +403,7 @@ function setColor(keys: KeyConfig[], rgb: [number, number, number] | null): void
     if (grid?.[k.row]) grid[k.row][k.col] = { ...v };
     k.customLight = { ...v };
   }
+  mirrorSpaceLeds(C()); // keep the LEDs under the spacebar the same colour as the spacebar
 }
 
 // ----- advanced -----

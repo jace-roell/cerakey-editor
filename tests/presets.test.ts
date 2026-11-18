@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { LAYOUT, bindOf } from "../src/config";
+import { LAYOUT, SPACE_LED_SLOTS, bindOf } from "../src/config";
 import * as P from "../src/hid/protocol";
 import { buildWritePlan, summarize } from "../src/hid/writer";
 import { PRESETS } from "../src/presets";
@@ -81,6 +81,29 @@ describe.skipIf(!existsSync(FIXTURE))("presets", () => {
     PRESETS.find(p => p.id === "factory-keys")!.apply(cfg);
     expect(bindOf(keyAt(cfg, 1, 5), "win", 0)).toBe(34); // was remapped to F5, factory is 5
     expect(summarize(buildWritePlan(cfg, { baseline: base })).keymap).toBeGreaterThan(0);
+  });
+
+  it("spacebar LED slots (row 5, cols 3-5 and 7-9) always match the spacebar's colour", () => {
+    for (const p of PRESETS.filter(x => x.group === "Lighting")) {
+      const cfg = load();
+      p.apply(cfg);
+      const g = cfg.v2light.Keyboard.customLight;
+      for (const [r, c] of SPACE_LED_SLOTS) expect(g[r][c], `${p.name} r${r} c${c}`).toEqual(g[5][6]);
+    }
+    const cfg = load();
+    PRESETS.find(p => p.id === "synthwave")!.apply(cfg);
+    expect(cfg.v2light.Keyboard.customLight[5][4].isCustom).toBe(true);
+    PRESETS.find(p => p.id === "lights-off")!.apply(cfg);
+    expect(cfg.v2light.Keyboard.customLight[5][4].isCustom).toBe(false); // cleared too
+    // and the colour reaches the keyboard: the page holding r5 c3-c9 is in the write plan
+    const base = load();
+    const painted = structuredClone(base);
+    PRESETS.find(p => p.id === "synthwave")!.apply(painted);
+    const page = Math.floor((5 * 21 + 4) / 15);
+    const step = buildWritePlan(painted, { baseline: base }).find(s => s.label === `Key colours ${page + 1}/9`)!;
+    const slot = 4 + 4 * ((5 * 21 + 4) % 15); // B G R flag for r5 c4
+    const sp = painted.v2light.Keyboard.customLight[5][6];
+    expect(Array.from(step.packet.slice(slot, slot + 4))).toEqual([sp.B, sp.G, sp.R, 255]);
   });
 
   it("lighting presets switch lighting on and the heat map follows actuation", () => {

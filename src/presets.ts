@@ -3,7 +3,7 @@
 //
 // Keys are found by their factory base-layer keycode (not by matrix position), so a
 // preset touches the same physical keys even if you've remapped them.
-import { LAYOUT, activeOs, layerKey, lightArea } from "./config";
+import { LAYOUT, activeOs, layerKey, lightArea, mirrorSpaceLeds } from "./config";
 import type { KeyConfig, KeyboardConfig, OsKey, Performance, Rgb } from "./types";
 
 export type PresetGroup = "Actuation" | "Lighting" | "Keymap";
@@ -94,6 +94,7 @@ function paint(cfg: KeyboardConfig, colour: (k: KeyConfig, x: number, y: number)
     if (L?.customLight?.[key.row]) L.customLight[key.row][key.col] = { ...v };
     key.customLight = { ...v };
   }
+  mirrorSpaceLeds(cfg); // spacebar LEDs live in the empty slots beside it
   if (L?.light) L.light.open = "Open";
 }
 

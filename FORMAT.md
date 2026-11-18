@@ -90,6 +90,11 @@ Some keys also carry `singleTriggeringValue`, `rtPressValue`, `rtReleaseValue`,
 `light: { area, open "Open"/"Close", mode, luminance 0–100, speed 0–100, direction, selectStaticColor }`,
 `lamp: "SingleLighting"`, `customLight: 6×21 grid of {R,G,B,isCustom}`.
 
+Spacebar LEDs (unconfirmed): the spacebar's switch is at r5 c6, but the slots r5 c3–c5 and c7–c9
+have no switch and probably carry the LEDs under the 6.25u bar. A slot without `isCustom` shows
+the running effect, so colouring only c6 leaves the spacebar cycling colours. The editor copies
+the spacebar's colour into those six slots whenever colours change (`mirrorSpaceLeds`).
+
 ## HID protocol (writing to the keyboard)
 
 From the lab.cerakey.com bundle; implemented in `src/hid/`. WebHID, vendor interface

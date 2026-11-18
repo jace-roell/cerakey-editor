@@ -80,7 +80,7 @@ Close lab.cerakey.com (and any other tab using the keyboard) first; only one pag
 the device at a time. Every change can be undone with Ctrl+Z, and with auto-write on, undo is
 written to the keyboard too.
 
-## Develop
+## Development
 
 ```sh
 npm test           # packet builders vs. the official site's code, read/write round trips, presets, crypto
